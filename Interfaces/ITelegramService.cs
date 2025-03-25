@@ -1,4 +1,4 @@
-﻿namespace TelegramBitcoinPrices.Interfaces;
+﻿namespace TradeVault.Interfaces;
 
 public interface ITelegramService
 {

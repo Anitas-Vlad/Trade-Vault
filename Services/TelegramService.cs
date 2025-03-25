@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Telegram.Bot;
-using TelegramBitcoinPrices.Interfaces;
 using TelegramBitcoinPrices.Responses.TelegramMessageResponse;
+using TradeVault.Interfaces;
 
 namespace TradeVault.Services;
 
@@ -17,17 +17,14 @@ public class TelegramService : ITelegramService
     public TelegramService(IConfiguration configuration)
     {
         var botToken = configuration["TelegramSettings:TelegramBotToken"];
-        _telegramApiUrl = configuration["TelegramSettings:TelegramApiUrl"]!;
-        _telegramChatId = configuration["TelegramSettings:TelegramChatId"]!;
+        _telegramApiUrl = configuration["TelegramSettings:TelegramApiUrl"];
+        _telegramChatId = configuration["TelegramSettings:TelegramChatId"];
         
         if (string.IsNullOrEmpty(botToken))
             throw new InvalidOperationException("Telegram bot token is missing from configuration.");
 
         _botClient = new TelegramBotClient(botToken);
         _httpClient = new HttpClient();
-        
-        // _botClient = new TelegramBotClient(Settings.TelegramBotToken);
-        // _httpClient = new HttpClient();
     }
 
     public async Task SendMessageAsync(string message)

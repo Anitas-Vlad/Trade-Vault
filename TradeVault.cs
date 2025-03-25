@@ -1,5 +1,4 @@
-﻿using TelegramBitcoinPrices.Interfaces;
-using TradeVault.Interfaces;
+﻿using TradeVault.Interfaces;
 
 namespace TradeVault;
 
@@ -7,28 +6,30 @@ public class TradeVault : ITradeVault
 {
     private readonly IBtcPriceService _btcPriceService;
     private readonly ITelegramService _telegramService;
+    private readonly IBinanceService _binanceService;
     
-    public TradeVault(IBtcPriceService btcPriceService, ITelegramService telegramService)
+    public TradeVault(IBtcPriceService btcPriceService, ITelegramService telegramService, IBinanceService binanceService)
     {
         _btcPriceService = btcPriceService;
         _telegramService = telegramService;
+        _binanceService = binanceService;
     }
 
     public async Task Run()
     {
-        await _telegramService.InitializeLastUpdateId();
+        Console.WriteLine("App Running");
+        await _telegramService.SendMessageAsync("App Running.");
         
-        await _btcPriceService.GetBitcoinPriceAsync();
+        await _telegramService.InitializeLastUpdateId();
 
         while (true)
         {
             var message = await _telegramService.ListenForCommands();
 
-            switch (message)
+            if (message!.StartsWith("current"))
             {
-                case "btceur":
-                    await _btcPriceService.GetBitcoinPriceAsync();
-                    break;
+                var currencyPrice = await _binanceService.GetCurrencyPriceAsync(message);
+                await _telegramService.SendMessageAsync($"{message}: {currencyPrice}");
             }
         }
     }

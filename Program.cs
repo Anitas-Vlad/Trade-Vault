@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using TelegramBitcoinPrices.Interfaces;
 using TradeVault.Context;
 using TradeVault.Interfaces;
 using TradeVault.Services;
@@ -38,6 +37,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddSingleton<ITradeVault, TradeVault.TradeVault>();
             services.AddScoped<IBtcPriceService, BtcPriceService>();
             services.AddScoped<ITelegramService, TelegramService>();
+            services.AddScoped<IBinanceService, BinanceService>();
 
             var connectionString = configuration.GetConnectionString("trade-vault-context");
             if (string.IsNullOrEmpty(connectionString))

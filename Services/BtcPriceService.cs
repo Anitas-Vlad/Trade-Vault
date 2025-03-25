@@ -23,11 +23,8 @@ public class BtcPriceService : IBtcPriceService
     {
         try
         {
-            var response = await _httpClient.GetStringAsync(_configuration["CryptoSettings:BinanceApiUrl"]);
+            var response = await _httpClient.GetStringAsync(_configuration["BinanceApiUrls:BTCEUR"]);
             var priceData = JsonSerializer.Deserialize<PriceResponse>(response);
-
-            _context.PriceResponses.Add(priceData);
-            await _context.SaveChangesAsync();
 
             return decimal.Parse(priceData.price);
         }
