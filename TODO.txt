@@ -1,0 +1,7 @@
+﻿
+* all currents will be held local until their interval is finished.
+
+* when starting (At Run()) the app, you get all info from DB (Ema-s, candles, etc...) and form  List, LimetedQueue<>,
+or whatever needed and keep it local. 
+
+* When the intervals are met, add to both local and Db.

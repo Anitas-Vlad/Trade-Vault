@@ -70,7 +70,7 @@ public class TelegramService : ITelegramService
 
             if (updates?.result != null && updates.result.Length > 0)
             {
-                var lastUpdate = updates.result[^1]; // Get the latest message only
+                var lastUpdate = updates.result[^1];
 
                 if (lastUpdate.update_id == _lastUpdateId)
                     return "";

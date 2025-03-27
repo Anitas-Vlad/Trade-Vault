@@ -13,10 +13,8 @@ public class TradeVaultContextFactory : IDesignTimeDbContextFactory<TradeVaultCo
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        // Get the connection string
         var connectionString = configuration.GetConnectionString("trade-vault-context");
 
-        // Configure the DbContext options
         var optionsBuilder = new DbContextOptionsBuilder<TradeVaultContext>();
         optionsBuilder.UseSqlServer(connectionString);
 

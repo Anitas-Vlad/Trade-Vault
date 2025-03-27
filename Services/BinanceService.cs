@@ -23,8 +23,8 @@ public class BinanceService : IBinanceService
     {
         try
         {
-            var currencyCode = message.Replace("current ", "");
-            var response = await SetCurrencyResponse(currencyCode);
+            var currencySymbol = message.Replace("current ", "");
+            var response = await SetCurrencyResponse(currencySymbol);
 
             var priceData = JsonSerializer.Deserialize<PriceResponse>(response);
 
