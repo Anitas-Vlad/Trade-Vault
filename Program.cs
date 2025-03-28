@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TradeVault.Context;
+using TradeVault.Context.Repositories;
 using TradeVault.Interfaces;
 using TradeVault.Services;
 using TradeVault.Services.Mappers;
@@ -40,7 +41,12 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddScoped<ITelegramService, TelegramService>();
             services.AddScoped<IBinanceService, BinanceService>();
             services.AddScoped<ICoinMapper, CoinMapper>();
-            services.AddScoped<ITrackingService, TrackingService>();
+            services.AddScoped<ICandlesRepository, CandlesRepository>();
+            services.AddScoped<ICoinsRepository, CoinsRepository>();
+            services.AddScoped<ICandleProcessorFactory, CandleProcessorFactory>();
+            services.AddScoped<ICandleProcessor, CandleProcessor>();
+            services.AddScoped<ICandleTracker, CandleTracker>();
+            services.AddScoped<ICandleTrackingService, CandleTrackingService>();
             
             var connectionString = configuration.GetConnectionString("trade-vault-context");
             if (string.IsNullOrEmpty(connectionString))

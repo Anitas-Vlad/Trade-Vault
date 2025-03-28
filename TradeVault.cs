@@ -7,13 +7,15 @@ public class TradeVault : ITradeVault
     private readonly IBtcPriceService _btcPriceService;
     private readonly ITelegramService _telegramService;
     private readonly IBinanceService _binanceService;
+    private readonly ICandleTracker _candleTracker;
 
     public TradeVault(IBtcPriceService btcPriceService, ITelegramService telegramService,
-        IBinanceService binanceService)
+        IBinanceService binanceService, ICandleTracker candleTracker)
     {
         _btcPriceService = btcPriceService;
         _telegramService = telegramService;
         _binanceService = binanceService;
+        _candleTracker = candleTracker;
     }
 
     public async Task RefreshDb()
@@ -36,7 +38,8 @@ public class TradeVault : ITradeVault
                 default:
                     if (message!.StartsWith("current"))
                     {
-                        var currencyPrice = await _binanceService.GetCurrencyPriceAsync(message);
+                        var currencySymbol = message.Replace("current ", "");
+                        var currencyPrice = await _binanceService.GetCurrencyPriceAsync(currencySymbol);
                         await _telegramService.SendMessageAsync($"{message}: {currencyPrice}");
                     }
 

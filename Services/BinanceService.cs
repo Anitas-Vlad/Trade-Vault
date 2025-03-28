@@ -19,12 +19,11 @@ public class BinanceService : IBinanceService
         _context = context;
     }
 
-    public async Task<decimal> GetCurrencyPriceAsync(string message)
+    public async Task<decimal> GetCurrencyPriceAsync(string symbol)
     {
         try
         {
-            var currencySymbol = message.Replace("current ", "");
-            var response = await SetCurrencyResponse(currencySymbol);
+            var response = await GetCurrencyResponse(symbol);
 
             var priceData = JsonSerializer.Deserialize<PriceResponse>(response);
 
@@ -40,7 +39,7 @@ public class BinanceService : IBinanceService
         }
     }
 
-    private async Task<string> SetCurrencyResponse(string currencyCode) =>
+    private async Task<string> GetCurrencyResponse(string currencyCode) =>
         currencyCode switch
         {
             "btc" => await _httpClient.GetStringAsync(_configuration["BinanceApiUrls:BTCEUR"]),
