@@ -2,13 +2,12 @@
 
 namespace TradeVault.Models;
 
-    //TODO This is CoinDb (from DataBase), may need in project an AppCoin that holds current things too.
-public class Coin
+public class CoinStats
 {
-    public int Id { get; set; }
     public string Symbol { get; set; }
+    public decimal CurrentPrice { get; set; }
     
-    public List<Candle> Candles10Sec { get; set; }
+    public List<Candle> Candles10Sec { get; set; } //TODO Or LimitedQueue<Candle>
     public List<Candle> Candles1Min { get; set; }
     
     public List<decimal> Ema10sec { get; set; }

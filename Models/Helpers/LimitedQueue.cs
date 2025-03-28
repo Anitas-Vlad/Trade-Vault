@@ -1,6 +1,6 @@
 ﻿namespace TradeVault.Models.Helpers;
 
-public class LimitedQueue : Queue<decimal>
+public class LimitedQueue<T> : Queue<T>
 {
     public int Limit { get; set; }
 
@@ -9,7 +9,7 @@ public class LimitedQueue : Queue<decimal>
         Limit = limit;
     }
 
-    public void Enqueue(decimal value)
+    public void Enqueue(T value)
     {
         if (Count >= Limit)
             Dequeue();

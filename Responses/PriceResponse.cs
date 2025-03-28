@@ -3,6 +3,6 @@
 public class PriceResponse
 {
     public int Id { get; set; }
-    public string price { get; set; }
-    public string symbol { get; set; }
+    public string Price { get; set; }
+    public string Symbol { get; set; }
 }

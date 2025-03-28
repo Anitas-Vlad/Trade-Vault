@@ -31,7 +31,7 @@ public class BinanceService : IBinanceService
             _context.PriceResponses.Add(priceData);
             await _context.SaveChangesAsync();
 
-            return decimal.Parse(priceData.price);
+            return decimal.Parse(priceData.Price);
         }
         catch (Exception ex)
         {

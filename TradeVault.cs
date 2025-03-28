@@ -16,6 +16,10 @@ public class TradeVault : ITradeVault
         _binanceService = binanceService;
     }
 
+    public async Task RefreshDb()
+    {
+    }
+
     public async Task Run()
     {
         Console.WriteLine("App Running");
@@ -35,6 +39,7 @@ public class TradeVault : ITradeVault
                         var currencyPrice = await _binanceService.GetCurrencyPriceAsync(message);
                         await _telegramService.SendMessageAsync($"{message}: {currencyPrice}");
                     }
+
                     break;
             }
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TradeVault.Models;
 using TradeVault.Responses;
 
 namespace TradeVault.Context;
@@ -16,6 +17,8 @@ public class TradeVaultContext : DbContext
     }
 
     public DbSet<PriceResponse> PriceResponses { get; set; } = default!;
+    public DbSet<Coin> Coins { get; set; } = default!;
+    public DbSet<Candle> Candles { get; set; } = default!;
 
     private static class ModelBuilderExtensions
     {

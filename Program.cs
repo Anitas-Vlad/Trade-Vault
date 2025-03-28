@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using TradeVault.Context;
 using TradeVault.Interfaces;
 using TradeVault.Services;
+using TradeVault.Services.Mappers;
 
 using var host = CreateHostBuilder(args).Build();
 
@@ -38,7 +39,9 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddScoped<IBtcPriceService, BtcPriceService>();
             services.AddScoped<ITelegramService, TelegramService>();
             services.AddScoped<IBinanceService, BinanceService>();
-
+            services.AddScoped<ICoinMapper, CoinMapper>();
+            services.AddScoped<ITrackingService, TrackingService>();
+            
             var connectionString = configuration.GetConnectionString("trade-vault-context");
             if (string.IsNullOrEmpty(connectionString))
                 throw new InvalidOperationException("Connection string 'trade-vault-context' not found.");
