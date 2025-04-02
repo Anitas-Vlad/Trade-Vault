@@ -9,11 +9,10 @@ public class CoinMapper : ICoinMapper
         new()
         {
             Symbol = coin.Symbol,
-            Candles1Min = coin.Candles1Min,
-            Candles10Sec = coin.Candles10Sec,
+            Candles = coin.Candles,
             
-            Ema1min = coin.Ema1min,
-            Ema10sec = coin.Ema10sec,
+            // Ema1min = coin.Ema1min,
+            // Ema10sec = coin.Ema10sec,
 
             CurrentPrice = 0
         };

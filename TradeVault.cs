@@ -18,9 +18,9 @@ public class TradeVault : ITradeVault
         _candleTracker = candleTracker;
     }
 
-    public async Task RefreshDb()
-    {
-    }
+    // public async Task RefreshDb()
+    // {
+    // }
 
     public async Task Run()
     {
@@ -38,9 +38,13 @@ public class TradeVault : ITradeVault
                 default:
                     if (message!.StartsWith("current"))
                     {
-                        var currencySymbol = message.Replace("current ", "");
-                        var currencyPrice = await _binanceService.GetCurrencyPriceAsync(currencySymbol);
+                        var currencyPrice = await _binanceService.GetCurrencyPriceAsync(message);
                         await _telegramService.SendMessageAsync($"{message}: {currencyPrice}");
+                    }else if (message!.StartsWith("track "))
+                    {
+                        await _candleTracker.AddAndStartProcessorAsync(message);
+                        await _telegramService.SendMessageAsync($"Started tracking candles.");
+                        break;
                     }
 
                     break;

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TradeVault.Context;
 
@@ -11,9 +12,11 @@ using TradeVault.Context;
 namespace TradeVault.Migrations
 {
     [DbContext(typeof(TradeVaultContext))]
-    partial class TradeVaultContextModelSnapshot : ModelSnapshot
+    [Migration("20250402214326_coins_and_candles")]
+    partial class coins_and_candles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,58 +83,6 @@ namespace TradeVault.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Coins");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Symbol = "btc"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Symbol = "eth"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Symbol = "bnb"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Symbol = "xrp"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Symbol = "ada"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Symbol = "sol"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Symbol = "dot"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Symbol = "matic"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Symbol = "doge"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Symbol = "ltc"
-                        });
                 });
 
             modelBuilder.Entity("TradeVault.Responses.PriceResponse", b =>

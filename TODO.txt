@@ -5,3 +5,5 @@
 or whatever needed and keep it local. 
 
 * When the intervals are met, add to both local and Db.
+
+TODO * Tracker:(development) Send messages for every created candle: symbol-stats-timeSpan

@@ -47,6 +47,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddScoped<ICandleProcessor, CandleProcessor>();
             services.AddScoped<ICandleTracker, CandleTracker>();
             services.AddScoped<ICandleTrackingService, CandleTrackingService>();
+            services.AddScoped<IMessageValidator, MessageValidator>();
             
             var connectionString = configuration.GetConnectionString("trade-vault-context");
             if (string.IsNullOrEmpty(connectionString))

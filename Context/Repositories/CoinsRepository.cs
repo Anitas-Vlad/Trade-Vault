@@ -15,9 +15,8 @@ public class CoinsRepository : ICoinsRepository
 
     public async Task<Coin> GetCoinBySymbol(string coinSymbol)
         => await _context.Coins
-            .Include(coin => coin.Ema1min)
-            .Include(coin => coin.Ema10sec)
-            .Include(coin => coin.Candles10Sec)
-            .Include(coin => coin.Candles1Min)
+            // .Include(coin => coin.Ema1min)
+            // .Include(coin => coin.Ema10sec)
+            .Include(coin => coin.Candles)
             .FirstAsync(coin => coin.Symbol == coinSymbol);
 }

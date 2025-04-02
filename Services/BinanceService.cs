@@ -19,18 +19,16 @@ public class BinanceService : IBinanceService
         _context = context;
     }
 
-    public async Task<decimal> GetCurrencyPriceAsync(string symbol)
+    public async Task<decimal> GetCurrencyPriceAsync(string message)
     {
         try
         {
-            var response = await GetCurrencyResponse(symbol);
+            var currencySymbol = ExtractCurrencySymbol(message);
+            var response = await GetCurrencyResponse(currencySymbol);
 
             var priceData = JsonSerializer.Deserialize<PriceResponse>(response);
 
-            _context.PriceResponses.Add(priceData);
-            await _context.SaveChangesAsync();
-
-            return decimal.Parse(priceData.Price);
+            return decimal.Parse(priceData.price);
         }
         catch (Exception ex)
         {
@@ -38,6 +36,9 @@ public class BinanceService : IBinanceService
             return 0;
         }
     }
+
+    private static string ExtractCurrencySymbol(string message) 
+        => message.Replace("current ", "");
 
     private async Task<string> GetCurrencyResponse(string currencyCode) =>
         currencyCode switch

@@ -1,16 +1,19 @@
-﻿using TradeVault.Interfaces;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using TradeVault.Interfaces;
 
 namespace TradeVault.Services;
 
 public class CandleTracker : ICandleTracker
 {
     private readonly ICandleProcessorFactory _candleProcessorFactory;
+    private readonly IMessageValidator _messageValidator;
     private readonly List<CandleProcessor> _processors = new();
     
 
-    public CandleTracker(ICandleProcessorFactory candleProcessorFactory)
+    public CandleTracker(ICandleProcessorFactory candleProcessorFactory, IMessageValidator messageValidator)
     {
         _candleProcessorFactory = candleProcessorFactory;
+        _messageValidator = messageValidator;
     }
 
     public void AddProcessor(string symbol, int secondsTimeSpan)
@@ -33,9 +36,11 @@ public class CandleTracker : ICandleTracker
         }
     }
     
-    public async Task AddAndStartProcessorAsync(string symbol, int intervalSeconds)
+    public async Task AddAndStartProcessorAsync(string message)
     {
-        var processor = _candleProcessorFactory.Create(symbol, intervalSeconds);
+        _messageValidator.TryParseTrackingMessage(message, out var symbol, out var timeSpan);
+        
+        var processor = _candleProcessorFactory.Create(symbol, timeSpan);
         _processors.Add(processor);
         await processor.StartProcessingAsync();
     }

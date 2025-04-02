@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TradeVault.Context;
 
@@ -11,9 +12,11 @@ using TradeVault.Context;
 namespace TradeVault.Migrations
 {
     [DbContext(typeof(TradeVaultContext))]
-    partial class TradeVaultContextModelSnapshot : ModelSnapshot
+    [Migration("20250402215131_Seed_Coins")]
+    partial class Seed_Coins
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

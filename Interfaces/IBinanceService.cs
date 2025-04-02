@@ -2,5 +2,5 @@
 
 public interface IBinanceService
 {
-    Task<decimal> GetCurrencyPriceAsync(string symbol);
+    Task<decimal> GetCurrencyPriceAsync(string message);
 }
