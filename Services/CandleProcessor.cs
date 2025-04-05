@@ -2,6 +2,7 @@
 using TradeVault.Context.Repositories;
 using TradeVault.Interfaces;
 using TradeVault.Models;
+using TradeVault.Responses;
 
 namespace TradeVault.Services;
 
@@ -11,21 +12,26 @@ public class CandleProcessor : ICandleProcessor
     private readonly ICandlesRepository _candlesRepository;
     private readonly ICoinsRepository _coinsRepository;
     private readonly TradeVaultContext _context;
-    
-    private readonly string _symbol;
-    private readonly int _secondsTimeSpan;
+
     private readonly CancellationTokenSource _cts = new();
 
-    public CandleProcessor(TradeVaultContext context, IBinanceService binanceService,ICoinsRepository coinsRepository, ICandlesRepository candlesRepository, string symbol, int secondsTimeSpan)
+    private readonly string _symbol;
+    private readonly int _secondsTimeSpan;
+
+    public CandleProcessor(TradeVaultContext context, IBinanceService binanceService, ICoinsRepository coinsRepository,
+        ICandlesRepository candlesRepository, string symbol, int secondsTimeSpan)
     {
         _context = context;
         _candlesRepository = candlesRepository;
         _coinsRepository = coinsRepository;
         _binanceService = binanceService;
-        
+
         _symbol = symbol;
         _secondsTimeSpan = secondsTimeSpan;
     }
+
+    public CandleProcessorInfo GetInfo()
+        => new(_symbol, _secondsTimeSpan);
 
     public async Task StartProcessingAsync()
     {
@@ -61,10 +67,10 @@ public class CandleProcessor : ICandleProcessor
 
             var newPrice = await _binanceService.GetCurrencyPriceAsync(_symbol);
             candle.PriceValues.Add(newPrice);
-            
+
             await Task.Delay(TimeSpan.FromSeconds(1), token);
         }
-        
+
         UpdateCandleStats(candle);
         return candle;
     }
@@ -76,6 +82,6 @@ public class CandleProcessor : ICandleProcessor
         candle.StartPrice = candle.PriceValues.First();
         candle.EndPrice = candle.PriceValues.Last();
     }
-    
+
     public void StopProcessing() => _cts.Cancel();
 }
