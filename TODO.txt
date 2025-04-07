@@ -8,5 +8,12 @@ or whatever needed and keep it local.
 
 TODO * Tracker:(development) Send messages for every created candle: symbol-stats-timeSpan
 
-TODO * Keep a maximum of candles of every type. Ex: max 200 Btc-1min candles. and max 200 Btc-3min candles. 
+* Keep a maximum of candles of every type. Ex: max 200 Btc-1min candles. and max 200 Btc-3min candles. 
 FIFO - Delete the first one ordered by Time
+
+* Start implementing EMA
+
+TODO * Start Macd message
+- Or when tracking a currency, automatically start it with pre-made setup (ema configurations)
+
+TODO * Fix AveragePrice while tracking

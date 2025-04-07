@@ -70,6 +70,7 @@ public class CandleProcessor : ICandleProcessor
 
             await Task.Delay(TimeSpan.FromSeconds(1), token);
         }
+        candle.AveragePrice = candle.PriceValues.Average();
 
         UpdateCandleStats(candle);
         return candle;

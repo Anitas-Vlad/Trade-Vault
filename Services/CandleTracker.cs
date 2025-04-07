@@ -46,8 +46,8 @@ public class CandleTracker : ICandleTracker
         
         var processor = _candleProcessorFactory.Create(symbol, timeSpan);
         _processors.Add(processor);
-        await processor.StartProcessingAsync();
-        // await _telegramService.SendMessageAsync($"Tracking candles for {symbol}, for every {timeSpan} seconds.");
+        
+        Task.Run(() => processor.StartProcessingAsync());
         
         return processor.GetInfo();
     }
