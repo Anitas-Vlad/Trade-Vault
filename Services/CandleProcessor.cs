@@ -1,7 +1,9 @@
-﻿using TradeVault.Context;
+﻿using Microsoft.IdentityModel.Tokens;
+using TradeVault.Context;
 using TradeVault.Context.Repositories;
 using TradeVault.Interfaces;
 using TradeVault.Models;
+using TradeVault.Models.Enums;
 using TradeVault.Responses;
 
 namespace TradeVault.Services;
@@ -9,41 +11,87 @@ namespace TradeVault.Services;
 public class CandleProcessor : ICandleProcessor
 {
     private readonly IBinanceService _binanceService;
+    private readonly ITelegramService _telegramService;
     private readonly ICandlesRepository _candlesRepository;
     private readonly ICoinsRepository _coinsRepository;
+    private readonly IAlgorithmService _algorithmService;
     private readonly TradeVaultContext _context;
 
     private readonly CancellationTokenSource _cts = new();
 
+    public List<decimal> pricesHistory = new();
     private readonly string _symbol;
     private readonly int _secondsTimeSpan;
+    private MacdResponseType _macdResponseType = MacdResponseType.Default;
 
-    public CandleProcessor(TradeVaultContext context, IBinanceService binanceService, ICoinsRepository coinsRepository,
+    public CandleProcessor(TradeVaultContext context, ITelegramService telegramService,
+        IAlgorithmService algorithmService,
+        IBinanceService binanceService, ICoinsRepository coinsRepository,
         ICandlesRepository candlesRepository, string symbol, int secondsTimeSpan)
     {
         _context = context;
+        _telegramService = telegramService;
         _candlesRepository = candlesRepository;
         _coinsRepository = coinsRepository;
         _binanceService = binanceService;
+        _algorithmService = algorithmService;
 
         _symbol = symbol;
         _secondsTimeSpan = secondsTimeSpan;
     }
 
     public CandleProcessorInfo GetInfo()
-        => new(_symbol, _secondsTimeSpan);
+        => new(_symbol, _secondsTimeSpan, _macdResponseType);
 
-    public async Task StartProcessingAsync()
+    public async Task StartProcessingAsync() //TODO Modify for dynamic Macd Parameters.
     {
         var token = _cts.Token;
-        var coin = _coinsRepository.GetCoinBySymbol(_symbol);
+        var coinTask = _coinsRepository.GetCoinBySymbol(_symbol);
 
         while (!token.IsCancellationRequested)
         {
             var candle = await CreateCandleAsync(token);
+
             await _candlesRepository.AddCandle(candle);
-            (await coin).Candles.Add(candle);
+            var coin = await coinTask;
+
+            coin.Candles.Add(candle);
+
+            if (pricesHistory.Count == 0)
+                pricesHistory = coin.GetPricesHistoryForTimeSpan(_secondsTimeSpan);
+
+            // _macdResponseType = _algorithmService.CheckMacdSignal(pricesHistory, 6, 13, 9, _symbol); //TODO Modify for dynamic Macd Parameters.
+            
+            try
+            {
+                _macdResponseType = _algorithmService.CheckMacdSignal(pricesHistory, 6, 13, 9, _symbol);
+                HandleMacdResponse();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in CheckMacdSignal: {ex.Message}");
+                _macdResponseType = MacdResponseType.Default;
+            }
+            
+            // HandleMacdResponse();
             await _context.SaveChangesAsync(token);
+        }
+    }
+
+    private void HandleMacdResponse()
+    {
+        switch (_macdResponseType)
+        {
+            case MacdResponseType.Buy:
+                _telegramService.SendMessageAsync($"💰{_symbol} Buy signal (MACD crossed below Signal Line)");
+                _macdResponseType = MacdResponseType.Default;
+                break;
+            case MacdResponseType.Sell:
+                _telegramService.SendMessageAsync($"📤{_symbol} Sell signal (MACD crossed above Signal Line)");
+                _macdResponseType = MacdResponseType.Default;
+                break;
+            case MacdResponseType.Default:
+                break;
         }
     }
 
@@ -70,6 +118,7 @@ public class CandleProcessor : ICandleProcessor
 
             await Task.Delay(TimeSpan.FromSeconds(1), token);
         }
+
         candle.AveragePrice = candle.PriceValues.Average();
 
         UpdateCandleStats(candle);

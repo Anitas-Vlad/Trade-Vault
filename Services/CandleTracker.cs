@@ -40,14 +40,14 @@ public class CandleTracker : ICandleTracker
         }
     }
     
-    public async Task<CandleProcessorInfo> AddAndStartProcessorAsync(string message)
+    public async Task<CandleProcessorInfo> AddAndStartCandleProcessorAsync(string message)
     {
         _messageValidator.TryParseTrackingMessage(message, out var symbol, out var timeSpan);
         
         var processor = _candleProcessorFactory.Create(symbol, timeSpan);
         _processors.Add(processor);
         
-        Task.Run(() => processor.StartProcessingAsync());
+        Task.Run(() => processor.StartProcessingAsync()); //TODO check if deleting "await" is needed.
         
         return processor.GetInfo();
     }

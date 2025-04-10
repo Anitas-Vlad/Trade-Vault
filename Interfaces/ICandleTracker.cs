@@ -6,6 +6,6 @@ public interface ICandleTracker
 {
     void AddProcessor(string symbol, int secondsTimeSpan);
     Task StartAllAsync();
-    Task<CandleProcessorInfo> AddAndStartProcessorAsync(string message);
+    Task<CandleProcessorInfo> AddAndStartCandleProcessorAsync(string message);
     void StopAll();
 }

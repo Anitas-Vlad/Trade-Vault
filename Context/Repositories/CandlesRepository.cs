@@ -13,16 +13,17 @@ public class CandlesRepository : ICandlesRepository
         _context = context;
     }
 
-    public async Task AddCandle(Candle entity) // TODO keep a maximum of 200 of each candle.
+    public async Task AddCandle(Candle candle) // TODO keep a maximum of 200 of each candle.
     {
-        var candlesFromDb = await GetCandlesForSecondsTimeSpan(entity.TimeSpan);
+        var candlesFromDb = await GetCandlesForSecondsTimeSpan(candle.Symbol, candle.TimeSpan);
         if (candlesFromDb.Count >= 200)
         {
             var firstCandle = candlesFromDb.First();
             _context.Candles.Remove(firstCandle);
         }
-        _context.Candles.Add(entity);
-        await _context.SaveChangesAsync();
+        _context.Candles.Add(candle);
+        // await _context.SaveChangesAsync();
+        // return candlesFromDb;
     }
 
     public async Task ClearCandles()
@@ -33,9 +34,10 @@ public class CandlesRepository : ICandlesRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<Candle>> GetCandlesForSecondsTimeSpan(int timespan)
+    public async Task<List<Candle>> GetCandlesForSecondsTimeSpan(string symbol,int timespan)
     {
         return await _context.Candles
+            .Where(candle => candle.Symbol == symbol)
             .Where(candle => candle.TimeSpan == timespan)
             .OrderBy(candle => candle.Time)
             .ToListAsync();

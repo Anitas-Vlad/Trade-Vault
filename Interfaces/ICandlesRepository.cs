@@ -4,7 +4,7 @@ namespace TradeVault.Interfaces;
 
 public interface ICandlesRepository
 {
-    Task AddCandle(Candle entity);
+    Task AddCandle(Candle candle);
     Task ClearCandles();
-    Task<List<Candle>> GetCandlesForSecondsTimeSpan(int timespan);
+    Task<List<Candle>> GetCandlesForSecondsTimeSpan(string symbol, int timespan);
 }

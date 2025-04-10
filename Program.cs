@@ -47,6 +47,8 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddScoped<ICandleProcessor, CandleProcessor>();
             services.AddScoped<ICandleTracker, CandleTracker>();
             services.AddScoped<IMessageValidator, MessageValidator>();
+            services.AddScoped<IAlgorithmService, AlgorithmService>();
+            // services.AddScoped<IBinanceCandleFetcher, BinanceCandleFetcher>();
             
             var connectionString = configuration.GetConnectionString("trade-vault-context");
             if (string.IsNullOrEmpty(connectionString))

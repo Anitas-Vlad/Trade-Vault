@@ -17,3 +17,9 @@ TODO * Start Macd message
 - Or when tracking a currency, automatically start it with pre-made setup (ema configurations)
 
 TODO * Fix AveragePrice while tracking
+
+TODO * When starting a new tracker:
+1. Clear Candles.
+2. Fetch the last 200 Candles from Binance.
+3. Save those 200.
+4. Continue with the app

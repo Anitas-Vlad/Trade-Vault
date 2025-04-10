@@ -47,9 +47,9 @@ public class TradeVault : ITradeVault
                     }
                     else if (message!.StartsWith("track "))
                     {
-                        var processorInfo = await _candleTracker.AddAndStartProcessorAsync(message);
+                        var processorInfo = await _candleTracker.AddAndStartCandleProcessorAsync(message);
                         await _telegramService.SendMessageAsync(
-                            $"Tracking candles for {processorInfo.Symbol}, for every {processorInfo.SecondsTimeSpan} seconds.");
+                            $"Tracking {processorInfo.Symbol}: {processorInfo.SecondsTimeSpan}sec candles.");
                     }
 
                     break;
