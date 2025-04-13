@@ -1,7 +1,7 @@
 ﻿using TradeVault.Context;
 using TradeVault.Interfaces;
 
-namespace TradeVault.Services;
+namespace TradeVault.Services.Tracking;
 
 public class CandleProcessorFactory : ICandleProcessorFactory
 {

@@ -1,25 +1,35 @@
-﻿
-* all currents will be held local until their interval is finished.
+﻿TODO * Tracker:(development) Send messages for every created candle: symbol-stats-timeSpan
 
-* when starting (At Run()) the app, you get all info from DB (Ema-s, candles, etc...) and form  List, LimetedQueue<>,
-or whatever needed and keep it local. 
-
-* When the intervals are met, add to both local and Db.
-
-TODO * Tracker:(development) Send messages for every created candle: symbol-stats-timeSpan
-
-* Keep a maximum of candles of every type. Ex: max 200 Btc-1min candles. and max 200 Btc-3min candles. 
-FIFO - Delete the first one ordered by Time
-
-* Start implementing EMA
-
-TODO * Start Macd message
-- Or when tracking a currency, automatically start it with pre-made setup (ema configurations)
+TODO * Start implementing EMA
 
 TODO * Fix AveragePrice while tracking
+
+TODO * Ask for all last processor messages "Last binance info"
+
+
+
+
+
+
+DONE : 
 
 TODO * When starting a new tracker:
 1. Clear Candles.
 2. Fetch the last 200 Candles from Binance.
 3. Save those 200.
 4. Continue with the app
+
+TODO * Max candles for each tracker
+* Keep a maximum of candles of every type. Ex: max 200 Btc-1min candles. and max 200 Btc-3min candles. 
+FIFO - Delete the first one ordered by Time
+
+TODO * Start Macd message
+- Or when tracking a currency, automatically start it with pre-made setup (ema configurations)
+
+TODO * Start implementing EMA
+
+TODO * Local -> Db (Not needed for now)
+- all currents will be held local until their interval is finished.
+- when starting (At Run()) the app, you get all info from DB (Ema-s, candles, etc...) and form  List, LimetedQueue<>,
+or whatever needed and keep it local. 
+- When the intervals are met, add to both local and Db.

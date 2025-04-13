@@ -29,9 +29,7 @@ public class AlgorithmService : IAlgorithmService
         return emaValues;
     }
 
-    private MacdResult CalculateMacd(List<decimal> prices, int shortPeriod = 12, int longPeriod = 26,
-            int signalPeriod = 9) //TODO Edit 
-        //TODO use it whenever creating a new candle.
+    private MacdResult CalculateMacd(List<decimal> prices, int shortPeriod, int longPeriod, int signalPeriod = 9) 
     {
         var shortEma = CalculateEma(prices, shortPeriod);
         var longEma = CalculateEma(prices, longPeriod);
@@ -59,12 +57,12 @@ public class AlgorithmService : IAlgorithmService
         if (macdResult.MacdLine.Count < 2 || macdResult.SignalLine.Count < 2)
             return MacdResponseType.Default;
 
-        var lastIndex = macdResult.MacdLine.Count - 1;
+        var lastIndex = macdResult.SignalLine.Count - 1;
         if (lastIndex - 1 < 0)
             return MacdResponseType.Default;
 
         var prevMacd = macdResult.MacdLine[lastIndex - 1];
-        var prevSignal = macdResult.SignalLine[lastIndex - 1];
+        var prevSignal = macdResult.SignalLine[lastIndex - 1]; //TODO It breaks here
         var currMacd = macdResult.MacdLine[lastIndex];
         var currSignal = macdResult.SignalLine[lastIndex];
 

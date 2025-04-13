@@ -9,16 +9,18 @@ public class TradeVault : ITradeVault
     private readonly ITelegramService _telegramService;
     private readonly IBinanceService _binanceService;
     private readonly ICandleTracker _candleTracker;
+    private readonly IBinanceCandleTracker _binanceCandleTracker;
 
     public TradeVault(IBtcPriceService btcPriceService, ICandlesRepository candlesRepository,
         ITelegramService telegramService,
-        IBinanceService binanceService, ICandleTracker candleTracker)
+        IBinanceService binanceService, ICandleTracker candleTracker, IBinanceCandleTracker binanceCandleTracker)
     {
         _btcPriceService = btcPriceService;
         _telegramService = telegramService;
         _binanceService = binanceService;
         _candleTracker = candleTracker;
         _candlesRepository = candlesRepository;
+        _binanceCandleTracker = binanceCandleTracker;
     }
 
     public async Task Run()
@@ -34,23 +36,35 @@ public class TradeVault : ITradeVault
 
             switch (message)
             {
+                case (null): break;
                 case "clear candles": // (Development)
                 {
                     await _candlesRepository.ClearCandles();
                     break;
                 }
+                case "stop binance":
+                {
+                    _binanceCandleTracker.StopAll();
+                    break;
+                }
                 default:
-                    if (message!.StartsWith("current"))
+                    if (message.StartsWith("current"))
                     {
                         var currencyPrice = await _binanceService.GetCurrencyPriceAsync(message);
                         await _telegramService.SendMessageAsync($"{message}: {currencyPrice}");
                     }
-                    else if (message!.StartsWith("track "))
+                    else if (message.StartsWith("binance "))
                     {
-                        var processorInfo = await _candleTracker.AddAndStartCandleProcessorAsync(message);
+                        var processorInfo = await _binanceCandleTracker.AddAndStartCandleProcessorAsync(message);
                         await _telegramService.SendMessageAsync(
-                            $"Tracking {processorInfo.Symbol}: {processorInfo.SecondsTimeSpan}sec candles.");
+                            $"Tracking Binance {processorInfo.Symbol}: {processorInfo.TimeSpan} candles.");
                     }
+                    // else if (message.StartsWith("track "))
+                    // {
+                    //     var processorInfo = await _candleTracker.AddAndStartCandleProcessorAsync(message);
+                    //     await _telegramService.SendMessageAsync(
+                    //         $"Tracking {processorInfo.Symbol}: {processorInfo.SecondsTimeSpan}sec candles.");
+                    // }
 
                     break;
             }

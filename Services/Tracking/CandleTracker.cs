@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
-using TradeVault.Interfaces;
+﻿using TradeVault.Interfaces;
 using TradeVault.Responses;
 
-namespace TradeVault.Services;
+namespace TradeVault.Services.Tracking;
 
 public class CandleTracker : ICandleTracker
 {
@@ -47,7 +46,7 @@ public class CandleTracker : ICandleTracker
         var processor = _candleProcessorFactory.Create(symbol, timeSpan);
         _processors.Add(processor);
         
-        Task.Run(() => processor.StartProcessingAsync()); //TODO check if deleting "await" is needed.
+        Task.Run(() => processor.StartProcessingAsync());
         
         return processor.GetInfo();
     }
