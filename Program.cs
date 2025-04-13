@@ -7,7 +7,9 @@ using TradeVault.Context;
 using TradeVault.Context.Repositories;
 using TradeVault.Interfaces;
 using TradeVault.Services;
+using TradeVault.Services.BinanceTracking;
 using TradeVault.Services.Mappers;
+using TradeVault.Services.Tracking;
 
 using var host = CreateHostBuilder(args).Build();
 
@@ -48,6 +50,10 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddScoped<ICandleTracker, CandleTracker>();
             services.AddScoped<IMessageValidator, MessageValidator>();
             services.AddScoped<IAlgorithmService, AlgorithmService>();
+            services.AddScoped<IBinanceCandleProcessor, BinanceCandleProcessor>();
+            services.AddScoped<IBinanceCandleProcessorFactory, BinanceCandleProcessorFactory>();
+            services.AddScoped<IBinanceCandleTracker, BinanceCandleTracker>();
+            
             // services.AddScoped<IBinanceCandleFetcher, BinanceCandleFetcher>();
             
             var connectionString = configuration.GetConnectionString("trade-vault-context");

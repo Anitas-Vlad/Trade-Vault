@@ -1,6 +1,6 @@
-﻿namespace TradeVault.Models;
+﻿namespace TradeVault.Responses;
 
-public class BinanceKline
+public class BinanceKlineResponse
 {
     public long OpenTime { get; set; }
     public decimal Open { get; set; }

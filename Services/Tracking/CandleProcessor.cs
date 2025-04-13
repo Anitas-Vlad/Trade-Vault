@@ -1,12 +1,10 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using TradeVault.Context;
-using TradeVault.Context.Repositories;
+﻿using TradeVault.Context;
 using TradeVault.Interfaces;
 using TradeVault.Models;
 using TradeVault.Models.Enums;
 using TradeVault.Responses;
 
-namespace TradeVault.Services;
+namespace TradeVault.Services.Tracking;
 
 public class CandleProcessor : ICandleProcessor
 {
@@ -59,8 +57,6 @@ public class CandleProcessor : ICandleProcessor
 
             if (pricesHistory.Count == 0)
                 pricesHistory = coin.GetPricesHistoryForTimeSpan(_secondsTimeSpan);
-
-            // _macdResponseType = _algorithmService.CheckMacdSignal(pricesHistory, 6, 13, 9, _symbol); //TODO Modify for dynamic Macd Parameters.
             
             try
             {
