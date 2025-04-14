@@ -1,14 +1,15 @@
-﻿using TradeVault.Interfaces;
+﻿using TelegramBitcoinPrices.Input;
+using TradeVault.Interfaces;
 
-namespace TradeVault.Services;
+namespace TradeVault.Services.Input;
 
-public class MessageValidator : IMessageValidator
+public class InputValidator : IInputValidator
 {
     private static readonly HashSet<string> ValidCurrencies = new()
     {
         "btc", "eth", "bnb", "xrp", "ada", "sol", "dot", "matic", "doge", "ltc"
     };
-    
+
     private static readonly HashSet<string> ValidTimeSpans = new()
     {
         "1m", "3m", "5m", "15m", "30m",
@@ -32,7 +33,31 @@ public class MessageValidator : IMessageValidator
         if (!int.TryParse(parts[2], out timeSpan) || timeSpan <= 0)
             throw new ArgumentException("Invalid TimeSpan.");
     }
-    
+
+    public static void ValidateLowHighCommand(string input, out string symbol, out decimal lowPrice,
+        out decimal highPrice)
+    {
+        var parts = input.Split(' ');
+
+        if (parts.Length != 4 || parts[0].ToLower() != "lh")
+            throw new ArgumentException("Invalid input format. Expected format: 'start <lowNumber> <highNumber>'.");
+
+        symbol = parts[1].ToLower();
+        ValidateSymbol(symbol);
+        
+        if (!decimal.TryParse(parts[2], out _))
+            throw new ArgumentException("The first number must be a valid decimal.");
+
+        if (!decimal.TryParse(parts[3], out _))
+            throw new ArgumentException("The second number must be a valid decimal.");
+
+        lowPrice = decimal.Parse(parts[2]);
+        highPrice = decimal.Parse(parts[3]);
+
+        if (lowPrice >= highPrice)
+            throw new ArgumentException("First price must be higher than the high price.");
+    }
+
     public void TryParseTrackingMessageV2(string message, out string symbol, out string timeSpan)
     {
         symbol = string.Empty;
@@ -43,11 +68,16 @@ public class MessageValidator : IMessageValidator
             throw new ArgumentException("Invalid message.");
 
         symbol = parts[1].ToLower();
-        if (!ValidCurrencies.Contains(symbol))
-            throw new ArgumentException("Unknown currency.");
+        ValidateSymbol(symbol);
 
         timeSpan = parts[2].ToLower();
         if (!ValidTimeSpans.Contains(timeSpan))
             throw new ArgumentException("Unknown time-span.");
+    }
+
+    private static void ValidateSymbol(string symbol)
+    {
+        if (!ValidCurrencies.Contains(symbol))
+            throw new ArgumentException("Unknown currency.");
     }
 }

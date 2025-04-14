@@ -38,6 +38,9 @@ public class BinanceCandleProcessor : IBinanceCandleProcessor
         var token = _cts.Token;
         Candles = await _binanceService.FetchCandlesAsync(_symbol, _timeSpan);
         _lastCandleCloseTime = Candles.Last().CloseTime;
+        
+        await _telegramService.SendMessageAsync(
+            $"Tracking Binance {_symbol}: {_timeSpan} candles.");
 
         while (!token.IsCancellationRequested)
         {

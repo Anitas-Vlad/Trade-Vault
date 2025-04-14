@@ -4,23 +4,26 @@ namespace TradeVault;
 
 public class TradeVault : ITradeVault
 {
-    private readonly IBtcPriceService _btcPriceService;
     private readonly ICandlesRepository _candlesRepository;
     private readonly ITelegramService _telegramService;
     private readonly IBinanceService _binanceService;
     private readonly ICandleTracker _candleTracker;
     private readonly IBinanceCandleTracker _binanceCandleTracker;
+    private readonly ILowHighTracker _lowHighTracker;
 
-    public TradeVault(IBtcPriceService btcPriceService, ICandlesRepository candlesRepository,
+    private bool _isTradeVaultRunning = true;
+
+    public TradeVault(ICandlesRepository candlesRepository,
         ITelegramService telegramService,
-        IBinanceService binanceService, ICandleTracker candleTracker, IBinanceCandleTracker binanceCandleTracker)
+        IBinanceService binanceService, ICandleTracker candleTracker, IBinanceCandleTracker binanceCandleTracker, ILowHighTracker lowHighTracker)
     {
-        _btcPriceService = btcPriceService;
+        
         _telegramService = telegramService;
         _binanceService = binanceService;
         _candleTracker = candleTracker;
         _candlesRepository = candlesRepository;
         _binanceCandleTracker = binanceCandleTracker;
+        _lowHighTracker = lowHighTracker;
     }
 
     public async Task Run()
@@ -30,44 +33,51 @@ public class TradeVault : ITradeVault
 
         await _telegramService.InitializeLastUpdateId();
 
-        while (true)
+        while (_isTradeVaultRunning)
         {
             var message = await _telegramService.ListenForCommands();
 
-            switch (message)
+            try
             {
-                case (null): break;
-                case "clear candles": // (Development)
+                switch (message)
                 {
-                    await _candlesRepository.ClearCandles();
-                    break;
-                }
-                case "stop binance":
-                {
-                    _binanceCandleTracker.StopAll();
-                    break;
-                }
-                default:
-                    if (message.StartsWith("current"))
+                    case (null): break;
+                    case "clear candles": // (Development)
                     {
-                        var currencyPrice = await _binanceService.GetCurrencyPriceAsync(message);
-                        await _telegramService.SendMessageAsync($"{message}: {currencyPrice}");
+                        await _candlesRepository.ClearCandles();
+                        break;
                     }
-                    else if (message.StartsWith("binance "))
+                    case "stop binance":
                     {
-                        var processorInfo = await _binanceCandleTracker.AddAndStartCandleProcessorAsync(message);
-                        await _telegramService.SendMessageAsync(
-                            $"Tracking Binance {processorInfo.Symbol}: {processorInfo.TimeSpan} candles.");
+                        _binanceCandleTracker.StopAll();
+                        break;
                     }
-                    // else if (message.StartsWith("track "))
-                    // {
-                    //     var processorInfo = await _candleTracker.AddAndStartCandleProcessorAsync(message);
-                    //     await _telegramService.SendMessageAsync(
-                    //         $"Tracking {processorInfo.Symbol}: {processorInfo.SecondsTimeSpan}sec candles.");
-                    // }
+                    default:
+                        if (message.StartsWith("current"))
+                        {
+                            var currencyPrice = await _binanceService.GetCurrentPriceFromMessageAsync(message);
+                            await _telegramService.SendMessageAsync($"{message}: {currencyPrice}");
+                        }
+                        else if (message.StartsWith("binance "))
+                            await _binanceCandleTracker.AddAndStartCandleProcessorAsync(message);
+                    
+                        else if (message.StartsWith("lh "))
+                            await _lowHighTracker.AddAndStartAsync(message);
 
-                    break;
+                        else if (message.StartsWith("stop lh ")) //TODO Complete
+                        {
+                        
+                        }
+
+                        break;
+                }
             }
+            catch (Exception e)
+            {
+                await _telegramService.SendMessageAsync("Error: " + e.Message);
+            }
+            
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
     }
 }

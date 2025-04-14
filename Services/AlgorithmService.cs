@@ -62,16 +62,16 @@ public class AlgorithmService : IAlgorithmService
             return MacdResponseType.Default;
 
         var prevMacd = macdResult.MacdLine[lastIndex - 1];
-        var prevSignal = macdResult.SignalLine[lastIndex - 1]; //TODO It breaks here
+        var prevSignal = macdResult.SignalLine[lastIndex - 1];
         var currMacd = macdResult.MacdLine[lastIndex];
         var currSignal = macdResult.SignalLine[lastIndex];
 
-        // Buy when MACD crosses below the signal line
-        if (prevMacd > prevSignal && currMacd < currSignal)
+        // ✅ Buy when MACD crosses above the Signal Line
+        if (prevMacd < prevSignal && currMacd > currSignal)
             return MacdResponseType.Buy;
 
-        // Sell when MACD crosses above the signal line
-        if (prevMacd < prevSignal && currMacd > currSignal)
+        // ✅ Sell when MACD crosses below the Signal Line
+        if (prevMacd > prevSignal && currMacd < currSignal)
             return MacdResponseType.Sell;
 
         return MacdResponseType.Default;

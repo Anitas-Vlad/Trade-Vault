@@ -109,7 +109,7 @@ public class CandleProcessor : ICandleProcessor
                 return candle;
             }
 
-            var newPrice = await _binanceService.GetCurrencyPriceAsync(_symbol);
+            var newPrice = await _binanceService.GetCurrentPriceFromMessageAsync(_symbol);
             candle.PriceValues.Add(newPrice);
 
             await Task.Delay(TimeSpan.FromSeconds(1), token);

@@ -8,6 +8,8 @@ using TradeVault.Context.Repositories;
 using TradeVault.Interfaces;
 using TradeVault.Services;
 using TradeVault.Services.BinanceTracking;
+using TradeVault.Services.Input;
+using TradeVault.Services.LowHighTracking;
 using TradeVault.Services.Mappers;
 using TradeVault.Services.Tracking;
 
@@ -39,7 +41,6 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddSingleton<HttpClient>();
 
             services.AddSingleton<ITradeVault, TradeVault.TradeVault>();
-            services.AddScoped<IBtcPriceService, BtcPriceService>();
             services.AddScoped<ITelegramService, TelegramService>();
             services.AddScoped<IBinanceService, BinanceService>();
             services.AddScoped<ICoinMapper, CoinMapper>();
@@ -48,11 +49,17 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddScoped<ICandleProcessorFactory, CandleProcessorFactory>();
             services.AddScoped<ICandleProcessor, CandleProcessor>();
             services.AddScoped<ICandleTracker, CandleTracker>();
-            services.AddScoped<IMessageValidator, MessageValidator>();
+            services.AddScoped<IInputValidator, InputValidator>();
             services.AddScoped<IAlgorithmService, AlgorithmService>();
             services.AddScoped<IBinanceCandleProcessor, BinanceCandleProcessor>();
             services.AddScoped<IBinanceCandleProcessorFactory, BinanceCandleProcessorFactory>();
             services.AddScoped<IBinanceCandleTracker, BinanceCandleTracker>();
+            
+            services.AddSingleton<INotificationsService, NotificationsService>();
+            services.AddSingleton<ILowHighProcessorFactory, LowHighProcessorFactory>();
+            services.AddSingleton<ILowHighProcessor, LowHighProcessor>();
+            services.AddSingleton<ILowHighTracker, LowHighTracker>();
+            services.AddScoped<IInputParserService, InputParserService>();
             
             // services.AddScoped<IBinanceCandleFetcher, BinanceCandleFetcher>();
             

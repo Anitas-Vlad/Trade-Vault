@@ -19,12 +19,29 @@ public class BinanceService : IBinanceService
         // _context = context;
     }
 
-    public async Task<decimal> GetCurrencyPriceAsync(string message)
+    public async Task<decimal> GetCurrentPriceFromMessageAsync(string message) //TODO Refactor
     {
         try
         {
             var currencySymbol = ExtractCurrencySymbol(message);
             var response = await GetCurrencyResponse(currencySymbol);
+
+            var priceData = JsonSerializer.Deserialize<PriceResponse>(response);
+
+            return decimal.Parse(priceData.price);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching Bitcoin price: {ex.Message}");
+            return 0;
+        }
+    }
+
+    public async Task<decimal> GetCurrentPriceForSymbol(string symbol)
+    {
+        try
+        {
+            var response = await GetCurrencyResponse(symbol);
 
             var priceData = JsonSerializer.Deserialize<PriceResponse>(response);
 

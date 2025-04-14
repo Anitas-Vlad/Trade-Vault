@@ -7,14 +7,14 @@ namespace TradeVault.Services.BinanceTracking;
 public class BinanceCandleTracker : IBinanceCandleTracker
 {
     private readonly IBinanceCandleProcessorFactory _binanceCandleProcessorFactory;
-    private readonly IMessageValidator _messageValidator;
+    private readonly IInputValidator _inputValidator;
     
     private readonly List<BinanceCandleProcessor> _processors = new();
 
-    public BinanceCandleTracker(IBinanceCandleProcessorFactory factory,IMessageValidator messageValidator)
+    public BinanceCandleTracker(IBinanceCandleProcessorFactory factory,IInputValidator inputValidator)
     {
         _binanceCandleProcessorFactory = factory;
-        _messageValidator = messageValidator;
+        _inputValidator = inputValidator;
     }
     
     public void AddProcessor(string symbol, string timeSpan)
@@ -23,16 +23,14 @@ public class BinanceCandleTracker : IBinanceCandleTracker
         _processors.Add(processor);
     }
     
-    public async Task<BinanceCandleProcessorInfo> AddAndStartCandleProcessorAsync(string message)
+    public async Task AddAndStartCandleProcessorAsync(string message)
     {
-        _messageValidator.TryParseTrackingMessageV2(message, out var symbol, out var timeSpan);
+        _inputValidator.TryParseTrackingMessageV2(message, out var symbol, out var timeSpan);
         
         var processor = _binanceCandleProcessorFactory.Create(symbol, timeSpan);
         _processors.Add(processor);
         
         Task.Run(() => processor.StartProcessingAsync()); //TODO check if deleting "await" is needed.
-        
-        return processor.GetInfo();
     }
 
     public async Task StartAllAsync()
