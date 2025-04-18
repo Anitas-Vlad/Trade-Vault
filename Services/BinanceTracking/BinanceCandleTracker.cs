@@ -30,7 +30,7 @@ public class BinanceCandleTracker : IBinanceCandleTracker
         var processor = _binanceCandleProcessorFactory.Create(symbol, timeSpan);
         _processors.Add(processor);
         
-        Task.Run(() => processor.StartProcessingAsync()); //TODO check if deleting "await" is needed.
+        Task.Run(() => processor.StartProcessingAsync());
     }
 
     public async Task StartAllAsync()

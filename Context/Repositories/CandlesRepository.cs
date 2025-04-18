@@ -13,7 +13,7 @@ public class CandlesRepository : ICandlesRepository
         _context = context;
     }
 
-    public async Task AddCandle(Candle candle) // TODO keep a maximum of 200 of each candle.
+    public async Task AddCandle(Candle candle)
     {
         var candlesFromDb = await GetCandlesForSecondsTimeSpan(candle.Symbol, candle.TimeSpan);
         if (candlesFromDb.Count >= 200)
@@ -22,8 +22,6 @@ public class CandlesRepository : ICandlesRepository
             _context.Candles.Remove(firstCandle);
         }
         _context.Candles.Add(candle);
-        // await _context.SaveChangesAsync();
-        // return candlesFromDb;
     }
 
     public async Task ClearCandles()

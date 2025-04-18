@@ -66,9 +66,8 @@ public class TradeVault : ITradeVault
 
                         else if (message.StartsWith("stop lh ")) //TODO Complete
                         {
-                        
+                            
                         }
-
                         break;
                 }
             }
