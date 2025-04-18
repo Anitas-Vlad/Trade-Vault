@@ -6,12 +6,12 @@ public class CandleProcessorInfo
 {
     public string Symbol { get; set; }
     public int SecondsTimeSpan { get; set; }
-    public MacdResponseType MacdResponseType { get; set; }
+    public TradeSignal TradeSignal { get; set; }
 
-    public CandleProcessorInfo(string symbol, int secondsTimeSpan, MacdResponseType macdResponseType)
+    public CandleProcessorInfo(string symbol, int secondsTimeSpan, TradeSignal tradeSignal)
     {
         Symbol = symbol;
         SecondsTimeSpan = secondsTimeSpan;
-        MacdResponseType = macdResponseType;
+        TradeSignal = tradeSignal;
     }
 }

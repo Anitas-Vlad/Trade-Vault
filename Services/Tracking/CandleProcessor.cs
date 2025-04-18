@@ -20,7 +20,7 @@ public class CandleProcessor : ICandleProcessor
     public List<decimal> pricesHistory = new();
     private readonly string _symbol;
     private readonly int _secondsTimeSpan;
-    private MacdResponseType _macdResponseType = MacdResponseType.Default;
+    private TradeSignal _tradeSignal = TradeSignal.Default;
 
     public CandleProcessor(TradeVaultContext context, ITelegramService telegramService,
         IAlgorithmService algorithmService,
@@ -39,7 +39,7 @@ public class CandleProcessor : ICandleProcessor
     }
 
     public CandleProcessorInfo GetInfo()
-        => new(_symbol, _secondsTimeSpan, _macdResponseType);
+        => new(_symbol, _secondsTimeSpan, _tradeSignal);
 
     public async Task StartProcessingAsync() //TODO Modify for dynamic Macd Parameters.
     {
@@ -60,13 +60,13 @@ public class CandleProcessor : ICandleProcessor
             
             try
             {
-                _macdResponseType = _algorithmService.CheckMacdSignal(pricesHistory, 6, 13, 9, _symbol);
+                _tradeSignal = _algorithmService.CheckMacdSignal(pricesHistory, 6, 13, 9, _symbol);
                 HandleMacdResponse();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error in CheckMacdSignal: {ex.Message}");
-                _macdResponseType = MacdResponseType.Default;
+                _tradeSignal = TradeSignal.Default;
             }
             
             // HandleMacdResponse();
@@ -76,17 +76,17 @@ public class CandleProcessor : ICandleProcessor
 
     private void HandleMacdResponse()
     {
-        switch (_macdResponseType)
+        switch (_tradeSignal)
         {
-            case MacdResponseType.Buy:
+            case TradeSignal.Buy:
                 _telegramService.SendMessageAsync($"💰{_symbol} Buy signal (MACD crossed below Signal Line)");
-                _macdResponseType = MacdResponseType.Default;
+                _tradeSignal = TradeSignal.Default;
                 break;
-            case MacdResponseType.Sell:
+            case TradeSignal.Sell:
                 _telegramService.SendMessageAsync($"📤{_symbol} Sell signal (MACD crossed above Signal Line)");
-                _macdResponseType = MacdResponseType.Default;
+                _tradeSignal = TradeSignal.Default;
                 break;
-            case MacdResponseType.Default:
+            case TradeSignal.Default:
                 break;
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace TradeVault.Models.Helpers;
+﻿namespace TradeVault.Services.Indicators.Results;
 
 public class MacdResult
 {

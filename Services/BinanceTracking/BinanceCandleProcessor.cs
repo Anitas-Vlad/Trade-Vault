@@ -1,4 +1,5 @@
 ﻿using TradeVault.Interfaces;
+using TradeVault.Interfaces.Indicators;
 using TradeVault.Models;
 using TradeVault.Models.Enums;
 using TradeVault.Responses;
@@ -10,28 +11,32 @@ public class BinanceCandleProcessor : IBinanceCandleProcessor
     private readonly IBinanceService _binanceService;
     private readonly ITelegramService _telegramService;
     private readonly IAlgorithmService _algorithmService;
-
+    private readonly IMacdSignalDetector _macdSignalDetector;
+    private readonly ITradingSignalDetectorService _tradingSignalDetectorService;
+    
     private readonly CancellationTokenSource _cts = new();
 
     private readonly string _symbol;
     private readonly string _timeSpan;
     private long _lastCandleCloseTime;
-    private MacdResponseType _macdResponseType = MacdResponseType.Default;
-    public MacdResponseType LastMacdMessageType = MacdResponseType.Default;
+    private TradeSignal _tradeSignal = TradeSignal.Default;
+    public TradeSignal LastMacdMessageType = TradeSignal.Default;
     public List<BinanceKlineResponse> Candles { get; set; } = new();
 
     public BinanceCandleProcessor(IBinanceService binanceService, ITelegramService telegramService,
-        IAlgorithmService algorithmService, string symbol, string timeSpan)
+        IAlgorithmService algorithmService, IMacdSignalDetector macdSignalDetector, ITradingSignalDetectorService tradingSignalDetectorService, string symbol, string timeSpan)
     {
         _binanceService = binanceService;
         _telegramService = telegramService;
         _algorithmService = algorithmService;
+        _macdSignalDetector = macdSignalDetector;
+        _tradingSignalDetectorService = tradingSignalDetectorService;
         _symbol = symbol;
         _timeSpan = timeSpan;
     }
 
     public BinanceCandleProcessorInfo GetInfo()
-        => new(_symbol, _timeSpan, _lastCandleCloseTime, _macdResponseType);
+        => new(_symbol, _timeSpan, _lastCandleCloseTime, _tradeSignal);
 
     public async Task StartProcessingAsync() //TODO (ShortPeriod, LongPeriod, SignalPeriod)
     {
@@ -47,22 +52,28 @@ public class BinanceCandleProcessor : IBinanceCandleProcessor
             var lastBinanceCandle = await _binanceService.FetchLastCandleAsync(_symbol, _timeSpan);
             if (lastBinanceCandle.CloseTime != _lastCandleCloseTime)
             {
-                Candles.RemoveAt(0);
-                Candles.Add(lastBinanceCandle);
-                _lastCandleCloseTime = lastBinanceCandle.CloseTime;
+                AddNewCandle(lastBinanceCandle);
 
                 try
                 {
-                    var candlesCloseValues = Candles.Select(candle => candle.Close).ToList();
-
-                    _macdResponseType = _algorithmService.CheckMacdSignal(candlesCloseValues, 6, 13, 9, _symbol);
-                    Console.WriteLine("MacdResponseType: " + _macdResponseType);
+                    // Method 1
+                    // // var candlesCloseValues = Candles.Select(candle => candle.Close).ToList();
+                    // // _macdResponseType = _algorithmService.CheckMacdSignal(candlesCloseValues, 6, 13, 9, _symbol);
+                    //
+                    // _macdResponseType = _macdSignalDetector.CheckMacdSignal(Candles, 6, 13, 9);
+                    //
+                    // Console.WriteLine("MacdResponseType: " + _macdResponseType);
+                    
+                    
+                    // METHOD 2
+                    _tradeSignal = await _tradingSignalDetectorService.GetTradeSignalAsync(_symbol, _timeSpan);
+                    Console.WriteLine($"MacdResponseType: {_tradeSignal} + time:{_timeSpan}");
                     HandleMacdResponse();
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Error in CheckMacdSignal: {ex.Message}");
-                    _macdResponseType = MacdResponseType.Default;
+                    _tradeSignal = TradeSignal.Default;
                 }
             }
 
@@ -70,27 +81,34 @@ public class BinanceCandleProcessor : IBinanceCandleProcessor
         }
     }
 
+    private void AddNewCandle(BinanceKlineResponse lastBinanceCandle)
+    {
+        Candles.RemoveAt(0);
+        Candles.Add(lastBinanceCandle);
+        _lastCandleCloseTime = lastBinanceCandle.CloseTime;
+    }
+
     private void HandleMacdResponse()
     {
-        switch (_macdResponseType)
+        switch (_tradeSignal)
         {
-            case MacdResponseType.Buy:
-                _macdResponseType = MacdResponseType.Default;
-                LastMacdMessageType = MacdResponseType.Buy;
+            case TradeSignal.Buy:
+                _tradeSignal = TradeSignal.Default;
+                LastMacdMessageType = TradeSignal.Buy;
                 _telegramService.SendMessageAsync($"\ud83d\udfe9\ud83d\udfe9\ud83d\udfe9{_symbol} : Buy signal \n" +
                                                   $"TimeSpan: {_timeSpan} \n" +
                                                   $"(MACD crossed below Signal Line)");
                 break;
 
-            case MacdResponseType.Sell:
-                _macdResponseType = MacdResponseType.Default;
-                LastMacdMessageType = MacdResponseType.Sell;
+            case TradeSignal.Sell:
+                _tradeSignal = TradeSignal.Default;
+                LastMacdMessageType = TradeSignal.Sell;
                 _telegramService.SendMessageAsync($"\ud83d\udfe5\ud83d\udfe5\ud83d\udfe5{_symbol} : Sell signal \n" +
                                                   $"TimeSpan: {_timeSpan} \n" +
                                                   $"(MACD crossed above Signal Line)");
                 break;
 
-            case MacdResponseType.Default:
+            case TradeSignal.Default:
                 break;
         }
     }

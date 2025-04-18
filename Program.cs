@@ -6,8 +6,10 @@ using Microsoft.Extensions.Logging;
 using TradeVault.Context;
 using TradeVault.Context.Repositories;
 using TradeVault.Interfaces;
+using TradeVault.Interfaces.Indicators;
 using TradeVault.Services;
 using TradeVault.Services.BinanceTracking;
+using TradeVault.Services.Indicators;
 using TradeVault.Services.Input;
 using TradeVault.Services.LowHighTracking;
 using TradeVault.Services.Mappers;
@@ -41,25 +43,33 @@ static IHostBuilder CreateHostBuilder(string[] args)
             services.AddSingleton<HttpClient>();
 
             services.AddSingleton<ITradeVault, TradeVault.TradeVault>();
-            services.AddScoped<ITelegramService, TelegramService>();
-            services.AddScoped<IBinanceService, BinanceService>();
-            services.AddScoped<ICoinMapper, CoinMapper>();
-            services.AddScoped<ICandlesRepository, CandlesRepository>();
-            services.AddScoped<ICoinsRepository, CoinsRepository>();
-            services.AddScoped<ICandleProcessorFactory, CandleProcessorFactory>();
-            services.AddScoped<ICandleProcessor, CandleProcessor>();
-            services.AddScoped<ICandleTracker, CandleTracker>();
-            services.AddScoped<IInputValidator, InputValidator>();
-            services.AddScoped<IAlgorithmService, AlgorithmService>();
-            services.AddScoped<IBinanceCandleProcessor, BinanceCandleProcessor>();
-            services.AddScoped<IBinanceCandleProcessorFactory, BinanceCandleProcessorFactory>();
-            services.AddScoped<IBinanceCandleTracker, BinanceCandleTracker>();
+            services.AddSingleton<ITelegramService, TelegramService>();
+            services.AddSingleton<IBinanceService, BinanceService>();
+            services.AddSingleton<ICoinMapper, CoinMapper>();
+            services.AddSingleton<ICandlesRepository, CandlesRepository>();
+            services.AddSingleton<ICoinsRepository, CoinsRepository>();
+            services.AddSingleton<ICandleProcessorFactory, CandleProcessorFactory>();
+            services.AddSingleton<ICandleProcessor, CandleProcessor>();
+            services.AddSingleton<ICandleTracker, CandleTracker>();
+            services.AddSingleton<IInputValidator, InputValidator>();
+            services.AddSingleton<IAlgorithmService, AlgorithmService>();
+            services.AddSingleton<IBinanceCandleProcessor, BinanceCandleProcessor>();
+            services.AddSingleton<IBinanceCandleProcessorFactory, BinanceCandleProcessorFactory>();
+            services.AddSingleton<IBinanceCandleTracker, BinanceCandleTracker>();
             
             services.AddSingleton<INotificationsService, NotificationsService>();
             services.AddSingleton<ILowHighProcessorFactory, LowHighProcessorFactory>();
             services.AddSingleton<ILowHighProcessor, LowHighProcessor>();
             services.AddSingleton<ILowHighTracker, LowHighTracker>();
-            services.AddScoped<IInputParserService, InputParserService>();
+            services.AddSingleton<IInputParserService, InputParserService>();
+
+            services.AddSingleton<IEmaCalculator, EmaCalculator>();
+            services.AddSingleton<IMacdCalculator, MacdCalculator>();
+            services.AddSingleton<IMacdSignalDetector, MacdSignalDetector>();
+            services.AddSingleton<IRsiCalculator, RsiCalculator>();
+            services.AddSingleton<ISignalEvaluator, SignalEvaluator>();
+            services.AddSingleton<IVolumeAnalyzer, VolumeAnalyzer>();
+            services.AddSingleton<ITradingSignalDetectorService, TradingSignalDetectorService>();
             
             // services.AddScoped<IBinanceCandleFetcher, BinanceCandleFetcher>();
             

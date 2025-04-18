@@ -1,6 +1,6 @@
 ﻿namespace TradeVault.Models.Enums;
 
-public enum MacdResponseType
+public enum TradeSignal
 {
     Buy, Sell, Default
 }

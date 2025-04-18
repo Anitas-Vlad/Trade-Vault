@@ -109,7 +109,7 @@ public class BinanceService : IBinanceService
             });
         }
 
-        Console.WriteLine(candles.Count + " candles found.");
+        // Console.WriteLine(candles.Count + " candles found.");
         return candles.OrderBy(candle => candle.CloseTime).ToList();
     }
     

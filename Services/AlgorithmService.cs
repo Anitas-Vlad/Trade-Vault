@@ -1,6 +1,7 @@
 ﻿using TradeVault.Interfaces;
 using TradeVault.Models.Enums;
 using TradeVault.Models.Helpers;
+using TradeVault.Services.Indicators.Results;
 
 namespace TradeVault.Services;
 
@@ -49,17 +50,17 @@ public class AlgorithmService : IAlgorithmService
         };
     }
 
-    public MacdResponseType CheckMacdSignal(List<decimal> prices, int shortPeriod, int longPeriod, int signalPeriod,
+    public TradeSignal CheckMacdSignal(List<decimal> prices, int shortPeriod, int longPeriod, int signalPeriod,
         string currencySymbol)
     {
         var macdResult = CalculateMacd(prices, shortPeriod, longPeriod, signalPeriod);
 
         if (macdResult.MacdLine.Count < 2 || macdResult.SignalLine.Count < 2)
-            return MacdResponseType.Default;
+            return TradeSignal.Default;
 
         var lastIndex = macdResult.SignalLine.Count - 1;
         if (lastIndex - 1 < 0)
-            return MacdResponseType.Default;
+            return TradeSignal.Default;
 
         var prevMacd = macdResult.MacdLine[lastIndex - 1];
         var prevSignal = macdResult.SignalLine[lastIndex - 1];
@@ -68,12 +69,12 @@ public class AlgorithmService : IAlgorithmService
 
         // ✅ Buy when MACD crosses above the Signal Line
         if (prevMacd < prevSignal && currMacd > currSignal)
-            return MacdResponseType.Buy;
+            return TradeSignal.Buy;
 
         // ✅ Sell when MACD crosses below the Signal Line
         if (prevMacd > prevSignal && currMacd < currSignal)
-            return MacdResponseType.Sell;
+            return TradeSignal.Sell;
 
-        return MacdResponseType.Default;
+        return TradeSignal.Default;
     }
 }
