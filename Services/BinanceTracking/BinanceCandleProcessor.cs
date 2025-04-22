@@ -57,8 +57,8 @@ public class BinanceCandleProcessor : IBinanceCandleProcessor
                 try
                 {
                     // Method 1
-                    // // var candlesCloseValues = Candles.Select(candle => candle.Close).ToList();
-                    // // _macdResponseType = _algorithmService.CheckMacdSignal(candlesCloseValues, 6, 13, 9, _symbol);
+                    // var candlesCloseValues = Candles.Select(candle => candle.Close).ToList();
+                    // _tradeSignal = _algorithmService.CheckMacdSignal(Candles, 6, 13, 9, _symbol);
                     //
                     // _macdResponseType = _macdSignalDetector.CheckMacdSignal(Candles, 6, 13, 9);
                     //

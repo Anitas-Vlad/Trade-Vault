@@ -13,9 +13,10 @@ public class EmaCalculator : IEmaCalculator
         var emaPrev = prices.Take(period).Average();
         emaValues.Add(emaPrev);
 
-        for (int i = period; i < prices.Count; i++)
+        for (var i = period; i < prices.Count; i++)
         {
-            decimal ema = ((prices[i] - emaPrev) * multiplier) + emaPrev;
+            var price = prices[i];
+            var ema = (price - emaPrev) * multiplier + emaPrev;
             emaValues.Add(ema);
             emaPrev = ema;
         }

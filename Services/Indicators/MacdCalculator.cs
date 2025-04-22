@@ -18,7 +18,7 @@ public class MacdCalculator : IMacdCalculator
         var shortEma = _emaCalculator.CalculateEma(prices, shortPeriod);
         var longEma = _emaCalculator.CalculateEma(prices, longPeriod);
 
-        int offset = longEma.Count - shortEma.Count;
+        var offset = longEma.Count - shortEma.Count;
         var macdLine = shortEma.Skip(offset).Zip(longEma, (s, l) => s - l).ToList();
         var signalLine = _emaCalculator.CalculateEma(macdLine, signalPeriod);
         var histogram = macdLine.Skip(macdLine.Count - signalLine.Count)

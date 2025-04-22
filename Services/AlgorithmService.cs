@@ -1,6 +1,8 @@
 ﻿using TradeVault.Interfaces;
+using TradeVault.Models;
 using TradeVault.Models.Enums;
 using TradeVault.Models.Helpers;
+using TradeVault.Responses;
 using TradeVault.Services.Indicators.Results;
 
 namespace TradeVault.Services;
@@ -9,7 +11,7 @@ public class AlgorithmService : IAlgorithmService
 {
     public List<decimal> CalculateEma(List<decimal> prices, int period)
     {
-        List<decimal> emaValues = new List<decimal>();
+        var emaValues = new List<decimal>();
 
         if (prices.Count < period)
             return emaValues;
@@ -19,7 +21,7 @@ public class AlgorithmService : IAlgorithmService
 
         emaValues.Add(emaPrev);
 
-        for (int i = period; i < prices.Count; i++)
+        for (var i = period; i < prices.Count; i++)
         {
             var price = prices[i];
             var ema = ((price - emaPrev) * multiplier) + emaPrev;
@@ -50,10 +52,41 @@ public class AlgorithmService : IAlgorithmService
         };
     }
 
-    public TradeSignal CheckMacdSignal(List<decimal> prices, int shortPeriod, int longPeriod, int signalPeriod,
+    public TradeSignal CheckMacdSignal(List<BinanceKlineResponse> candles, int shortPeriod, int longPeriod, int signalPeriod,
         string currencySymbol)
     {
-        var macdResult = CalculateMacd(prices, shortPeriod, longPeriod, signalPeriod);
+        var candlesCloseValues = candles.Select(candle => candle.Close).ToList();
+        
+        var macdResult = CalculateMacd(candlesCloseValues, shortPeriod, longPeriod, signalPeriod);
+
+        if (macdResult.MacdLine.Count < 2 || macdResult.SignalLine.Count < 2)
+            return TradeSignal.Default;
+
+        var lastIndex = macdResult.SignalLine.Count - 1;
+        if (lastIndex - 1 < 0)
+            return TradeSignal.Default;
+
+        var prevMacd = macdResult.MacdLine[lastIndex - 1];
+        var prevSignal = macdResult.SignalLine[lastIndex - 1];
+        var currMacd = macdResult.MacdLine[lastIndex];
+        var currSignal = macdResult.SignalLine[lastIndex];
+
+        // ✅ Buy when MACD crosses above the Signal Line
+        if (prevMacd < prevSignal && currMacd > currSignal)
+            return TradeSignal.Buy;
+
+        // ✅ Sell when MACD crosses below the Signal Line
+        if (prevMacd > prevSignal && currMacd < currSignal)
+            return TradeSignal.Sell;
+
+        return TradeSignal.Default;
+    }
+
+    public TradeSignal CheckMacdSignal(List<decimal> candlesClosingPrices, int shortPeriod, int longPeriod, int signalPeriod,
+        string currencySymbol) //Refactor or Delete. This is a duplicate
+    {
+        
+        var macdResult = CalculateMacd(candlesClosingPrices, shortPeriod, longPeriod, signalPeriod);
 
         if (macdResult.MacdLine.Count < 2 || macdResult.SignalLine.Count < 2)
             return TradeSignal.Default;

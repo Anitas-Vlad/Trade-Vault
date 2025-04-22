@@ -78,7 +78,7 @@ public class LowHighProcessor : ILowHighProcessor
                     case BtcPriceStatus.Skip:
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        break;
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(1));
@@ -90,20 +90,10 @@ public class LowHighProcessor : ILowHighProcessor
         }
     }
 
-    // private void ApplyMinMaxBtcPrice(string input)
-    // {
-    //     // var range = _inputParserService.ParseBtcRange(input);
-    //
-    //     _lowPriceBorder = range.LowBtcPrice;
-    //     _highPriceBorder = range.HighBtcPrice;
-    //
-    //     _telegramService.SendMessageAsync($"Low Number: {range.LowBtcPrice}, High Number: {range.HighBtcPrice}");
-    // }
-
     private async Task CheckCurrentPrice()
     {
         _currentPrice = await _binanceService.GetCurrentPriceForSymbol(Symbol);
-        Console.WriteLine($"Current {Symbol} Price: {_currentPrice}");
+        Console.WriteLine($"Current {Symbol} Price: {_currentPrice}"); //TODO delete
         if (_currentPrice > _highPriceBorder)
         {
             _awaitedBtcPriceStatus = BtcPriceStatus.Rise;
