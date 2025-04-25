@@ -2,7 +2,7 @@
 
 public interface ILowHighTracker
 {
-    Task AddAndStartAsync(string message);
+    Task AddLowHighTracker(string message);
     // void AddProcessor(string symbol, decimal lowPrice, decimal highPrice);
-    Task StopProcessor(string symbol);
+    Task StopLowHighTracker(string message);
 }

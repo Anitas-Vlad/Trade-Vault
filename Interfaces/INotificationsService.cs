@@ -9,4 +9,6 @@ public interface INotificationsService
     Task SendSellWarningAlert(decimal currentPrice);
 
     Task SendSellTargetAlert(decimal currentPrice);
+    Task SendLowHighAlertRise(decimal currentPrice, string symbol);
+    Task SendLowHighAlertDrop(decimal currentPrice, string symbol);
 }

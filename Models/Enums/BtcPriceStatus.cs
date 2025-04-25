@@ -2,7 +2,6 @@
 
 public enum BtcPriceStatus
 {
-    Buy,
     Rise,
     Drop,
     Skip

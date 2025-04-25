@@ -64,10 +64,10 @@ public class BinanceCandleProcessor : IBinanceCandleProcessor
                     //
                     // Console.WriteLine("MacdResponseType: " + _macdResponseType);
                     
-                    
                     // METHOD 2
+                    
                     _tradeSignal = await _tradingSignalDetectorService.GetTradeSignalAsync(_symbol, _timeSpan);
-                    Console.WriteLine($"MacdResponseType: {_tradeSignal} + time:{_timeSpan}");
+                    // Console.WriteLine($"MacdResponseType: {_tradeSignal} + time:{_timeSpan}");
                     HandleMacdResponse();
                 }
                 catch (Exception ex)

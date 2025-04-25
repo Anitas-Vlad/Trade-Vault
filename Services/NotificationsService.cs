@@ -10,7 +10,7 @@ public class NotificationsService : INotificationsService
     {
         _telegramService = telegramService;
     }
-    
+
     public async Task SendCurrentPriceAlert(decimal currentPrice)
     {
         if (currentPrice == 0) return;
@@ -33,5 +33,17 @@ public class NotificationsService : INotificationsService
     {
         if (currentPrice == 0) return;
         await _telegramService.SendMessageAsync($"🟩🟩🟩 BTC:{currentPrice}");
+    }
+
+    public async Task SendLowHighAlertRise(decimal currentPrice, string symbol)
+    {
+        if (currentPrice == 0) return;
+        await _telegramService.SendMessageAsync($"🟩{symbol} reached: {currentPrice}");
+    }
+
+    public async Task SendLowHighAlertDrop(decimal currentPrice, string symbol)
+    {
+        if (currentPrice == 0) return;
+        await _telegramService.SendMessageAsync($"🟥{symbol} dropped at: {currentPrice}");
     }
 }

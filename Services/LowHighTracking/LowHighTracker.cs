@@ -28,26 +28,34 @@ public class LowHighTracker : ILowHighTracker
     //     }
     // }
 
-    public async Task AddAndStartAsync(string message)
+    public async Task AddLowHighTracker(string message)
     {
         InputValidator.ValidateLowHighCommand(message, out var symbol, out var lowPrice, out var highPrice);
-        
+
         var existingProcessor = _processors.FirstOrDefault(p => p.Symbol == symbol);
 
-        existingProcessor?.Reset(lowPrice, highPrice);
+        if (existingProcessor != null)
+        {
+            existingProcessor.Reset(lowPrice, highPrice);
+        }
+        else
+        {
+            var processor = _lowHighProcessorFactory.Create(symbol, lowPrice, highPrice);
+            _processors.Add(processor);
 
-        var processor = _lowHighProcessorFactory.Create(symbol, lowPrice, highPrice);
-        _processors.Add(processor);
-        
-        Task.Run(() => processor.StartLowHighNotifications(message));
+            Task.Run(() => processor.StartLowHighNotifications(message));
+        }
     }
 
-    public async Task StopProcessor(string symbol)
+    public async Task StopLowHighTracker(string message)
     {
+        var symbol = message.Split(' ').Last();
+        Console.WriteLine($"Stopping low high processor for {symbol}");
+        InputValidator.ValidateSymbol(symbol);
         var processor = _processors.FirstOrDefault(p => p.Symbol == symbol);
         if (processor == null)
             throw new ArgumentException("There is no processor with symbol: " + symbol);
-        
+
         await processor.Stop();
         _processors.Remove(processor);
     }

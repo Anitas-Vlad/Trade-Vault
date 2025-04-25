@@ -62,11 +62,11 @@ public class TradeVault : ITradeVault
                             await _binanceCandleTracker.AddAndStartCandleProcessorAsync(message);
                     
                         else if (message.StartsWith("lh "))
-                            await _lowHighTracker.AddAndStartAsync(message);
+                            await _lowHighTracker.AddLowHighTracker(message);
 
                         else if (message.StartsWith("stop lh ")) //TODO Complete
                         {
-                            
+                            await _lowHighTracker.StopLowHighTracker(message);
                         }
                         break;
                 }
@@ -74,6 +74,7 @@ public class TradeVault : ITradeVault
             catch (Exception e)
             {
                 await _telegramService.SendMessageAsync("Error: " + e.Message);
+
             }
             
             await Task.Delay(TimeSpan.FromSeconds(5));

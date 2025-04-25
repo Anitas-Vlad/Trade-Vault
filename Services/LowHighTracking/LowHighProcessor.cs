@@ -43,6 +43,7 @@ public class LowHighProcessor : ILowHighProcessor
     public async Task Stop()
     {
         _cts.Cancel();
+        throw new ArgumentException("Succesfully stopped LowHigh for " + Symbol);
         await _telegramService.SendMessageAsync("Succesfully stopped LowHigh for " + Symbol);
     }
 
@@ -54,25 +55,21 @@ public class LowHighProcessor : ILowHighProcessor
         {
             await _telegramService.SendMessageAsync("Successfully activated low high notifications...");
 
-            _ = Task.Run(async () =>
+            while (!token.IsCancellationRequested)
             {
                 await CheckCurrentPrice();
 
                 switch (_awaitedBtcPriceStatus)
                 {
-                    case BtcPriceStatus.Buy:
-                    {
-                        await _notificationsService.SendBuyTargetAlert(_currentPrice);
-                        break;
-                    }
                     case BtcPriceStatus.Rise:
                     {
-                        await _notificationsService.SendSellTargetAlert(_currentPrice);
+                        await _notificationsService.SendLowHighAlertRise(_currentPrice, Symbol);
                         break;
                     }
                     case BtcPriceStatus.Drop:
                     {
-                        await _notificationsService.SendSellWarningAlert(_currentPrice);
+                        await _notificationsService.SendLowHighAlertDrop(_currentPrice, Symbol);
+
                         break;
                     }
                     case BtcPriceStatus.Skip:
@@ -81,8 +78,8 @@ public class LowHighProcessor : ILowHighProcessor
                         break;
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(1));
-            }, token);
+                await Task.Delay(TimeSpan.FromSeconds(1), token);
+            }
         }
         catch (Exception e)
         {
